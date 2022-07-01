@@ -10,55 +10,34 @@ resource "aws_s3_bucket" "frontend" {
   #checkov:skip=CKV_AWS_20:Website should be publicly accessible
   #checkov:skip=CKV_AWS_21:Versioning of websited is handled through git
   #checkov:skip=CKV_AWS_145:Don't encrypt publicly accessible website
-  bucket        = "frontend-${random_uuid.random_id.id}"
+  bucket = "frontend-${random_uuid.random_id.id}"
+  acl    = "public-read"
+
   force_destroy = true
+
+  website {
+    index_document = "index.html"
+    error_document = "404.html"
+  }
 }
 
 resource "aws_s3_bucket_policy" "frontend" {
   bucket = aws_s3_bucket.frontend.bucket
-  policy = data.aws_iam_policy_document.bucket_logging.json
+  policy = data.aws_iam_policy_document.frontend.json
 
 }
 
 data "aws_iam_policy_document" "frontend" {
   statement {
-    actions = ["s3:PutObject"]
-    resources = [
-      "arn:aws:s3:::${aws_s3_bucket.frontend.bucket}/*/AWSLogs/${data.aws_caller_identity.current.account_id}/*",
-    ]
+    sid       = "PublicReadGetObject"
+    actions   = ["s3:GetObject"]
+    resources = ["arn:aws:s3:::${aws_s3_bucket.frontend.bucket}/*"]
 
     principals {
-      type        = "AWS"
-      identifiers = [data.aws_elb_service_account.main.arn]
-    }
-  }
-
-  statement {
-    actions = ["s3:PutObject"]
-    resources = [
-      "arn:aws:s3:::${aws_s3_bucket.frontend.bucket}/*/AWSLogs/${data.aws_caller_identity.current.account_id}/*",
-    ]
-
-    principals {
-      type        = "Service"
-      identifiers = ["delivery.frontend.amazonaws.com"]
+      type        = "*"
+      identifiers = ["*"]
     }
 
-    condition {
-      test     = "StringEquals"
-      variable = "s3:x-amz-acl"
-      values   = ["bucket-owner-full-control"]
-    }
-  }
-
-  statement {
-    actions   = ["s3:GetBucketAcl"]
-    resources = ["arn:aws:s3:::${aws_s3_bucket.frontend.bucket}"]
-
-    principals {
-      type        = "Service"
-      identifiers = ["delivery.frontend.amazonaws.com"]
-    }
   }
 }
 
