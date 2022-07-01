@@ -64,7 +64,7 @@ resource "aws_instance" "backend_server" {
   depends_on = [aws_route_table.main]
 
   count                  = length(aws_subnet.main)
-  instance_type = "t3.micro"
+  instance_type          = "t3.micro"
   ami                    = data.aws_ami.ubuntu.id
   iam_instance_profile   = aws_iam_instance_profile.backend_server.name
   subnet_id              = aws_subnet.main.*.id[count.index]
