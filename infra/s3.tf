@@ -10,7 +10,7 @@ resource "aws_s3_bucket" "frontend" {
   #checkov:skip=CKV_AWS_20:Website should be publicly accessible
   #checkov:skip=CKV_AWS_21:Versioning of websited is handled through git
   #checkov:skip=CKV_AWS_145:Don't encrypt publicly accessible website
-  bucket = "frontend-${random_uuid.random_id.id}"
+  bucket        = "frontend-${random_uuid.random_id.id}"
   force_destroy = true
 }
 
@@ -21,7 +21,7 @@ resource "aws_s3_bucket_policy" "frontend" {
 }
 
 data "aws_iam_policy_document" "frontend" {
-    statement {
+  statement {
     actions = ["s3:PutObject"]
     resources = [
       "arn:aws:s3:::${aws_s3_bucket.frontend.bucket}/*/AWSLogs/${data.aws_caller_identity.current.account_id}/*",
