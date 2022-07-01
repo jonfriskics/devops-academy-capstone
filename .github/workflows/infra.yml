@@ -16,4 +16,3 @@ jobs:
           directory: infra/
           framework: terraform
           soft_fail: true
-

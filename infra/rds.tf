@@ -31,6 +31,7 @@ resource "aws_db_instance" "postgres" {
   publicly_accessible = true
   username            = "rds_user"
   password            = random_password.postgres_admin_password.result
+  subnet_ids          = [aws_db_subnet_group.main.*.id]
 
   lifecycle {
     ignore_changes = [
