@@ -79,10 +79,12 @@ jobs:
         working-directory: todo-backend
         run: make dist
       - name: Write RSA Private Key to file
+        working-directory: todo-backend
         run: |
           printf ${{ secrets.BASE64_SSH_PRIVATE_KEY }} | base64 -d > private_key && \
           chmod 0600 private_key
       - name: Generate env file
+        working-directory: todo-backend
         run: envsubst < .env.template > dist/todo.env
         env:
           APP_BIND_ADDRESS: 0.0.0.0:8080
@@ -91,6 +93,7 @@ jobs:
           POSTGRES_PASSWORD: ${{ secrets.POSTGRES_APP_PASSWORD }}
           POSTGRES_DB: ${{ secrets.POSTGRES_DATABASE }}
       - name: Copy files to EC2
+        working-directory: todo-backend
         run: |
           for i in ${{ secrets.EC2_INSTANCE_IPS }}; do
             echo "Starting deploy to $i...";
@@ -107,6 +110,7 @@ jobs:
               sudo systemctl daemon-reload';
           done
       - name: Start backend service on each EC2 instance
+        working-directory: todo-backend
         run: |
           for i in ${{ secrets.EC2_INSTANCE_IPS }}; do
             echo "Starting service on $i...";
