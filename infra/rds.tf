@@ -28,6 +28,7 @@ resource "aws_db_instance" "postgres" {
   engine_version       = "13.4"
   instance_class       = "db.t3.micro"
   multi_az             = true
+  name                 = var.project_name
   publicly_accessible  = true
   username             = "rds_user"
   password             = random_password.postgres_admin_password.result
