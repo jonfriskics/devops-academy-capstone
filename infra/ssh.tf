@@ -3,6 +3,7 @@ resource "tls_private_key" "ssh" {
   rsa_bits  = 4096
 }
 
+# MARK - when I uncomment these, it writes the key files to the local directory.  I would do that if I want to add those keys to my local machine to connect, correct?
 resource "local_file" "private_key" {
   content         = tls_private_key.ssh.private_key_pem
   filename        = "./ssh_key"

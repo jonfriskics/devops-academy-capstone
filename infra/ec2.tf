@@ -31,14 +31,19 @@ resource "aws_security_group" "backend_server" {
     to_port     = 5432
     from_port   = 5432
     protocol    = "tcp"
-    cidr_blocks = [aws_vpc.main.cidr_block]
+    # MARK, old cidr_blocks = [aws_vpc.main.cidr_block]
+    cidr_blocks = aws_subnet.main.*.cidr_block
   }
 
   ingress {
     to_port     = 8080
     from_port   = 8080
     protocol    = "tcp"
-    cidr_blocks = [aws_vpc.main.cidr_block]
+    # MARK, old cidr_blocks = [aws_vpc.main.cidr_block]
+    cidr_blocks = concat(
+      aws_subnet.main.*.cidr_block,
+      aws_subnet.public.*.cidr_block,
+    )
   }
 
   egress {
